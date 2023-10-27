@@ -29,7 +29,7 @@ run-mlflow:
 		serve
 
 run-minio:
-	docker run -it --rm \
+	docker run -d --rm \
 		--env-file ${CURRENT_DIR}/.env  \
 		--network ${NETWORK_NAME} \
 		-p "${MINIO_PORT}:9001" \
@@ -42,6 +42,9 @@ run-minio:
 stop-mlflow:
 	docker rm -f ${PROJECT_NAME}_container_ui
 
+stop-minio:
+	docker rm -f s3
+
 build-jupyter: prepare-dirs
 	docker build -f Dockerfile.jupyter -t ${PROJECT_NAME}:jupyter .
 
@@ -52,7 +55,7 @@ push-ui: build-ui-prod
 	docker push adzhumurat/${PROJECT_NAME}_ui:local
 
 run-jupyter: stop-jupyter build-jupyter
-	docker run -it --rm \
+	docker run -d --rm \
 	    --env-file ${CURRENT_DIR}/.env \
 	    -p ${PORT_JUPYTER}:8888 \
 	    -v "${CURRENT_DIR}/src:/srv/src" \
@@ -63,11 +66,11 @@ run-jupyter: stop-jupyter build-jupyter
 
 build:  build-mlflow build-jupyter build-minio
 
-stop: stop-mlflow stop-jupyter
+stop: stop-mlflow stop-jupyter stop-minio
 
-run: run-mlflow run-minio run-jupyter
+run-all: run-mlflow run-minio run-jupyter
 
-run: stop run
+run: stop run-all
 
 clean:
 	docker image rm -f adzhumurat/${PROJECT_NAME}_api:latest && \
