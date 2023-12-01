@@ -46,7 +46,7 @@ stop-minio:
 	docker rm -f s3
 
 build-jupyter: prepare-dirs
-	docker build -f Dockerfile.jupyter -t ${PROJECT_NAME}:jupyter .
+	docker build -f jupyter/Dockerfile -t ${PROJECT_NAME}:jupyter .
 
 stop-jupyter:
 	docker rm -f ${PROJECT_NAME}_jupyter_container
