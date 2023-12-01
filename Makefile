@@ -1,5 +1,5 @@
 CURRENT_DIR = $(shell pwd)
-PROJECT_NAME = mlflow
+PROJECT_NAME = mlflow_local
 NETWORK_NAME = service_network
 include .env
 export
@@ -12,11 +12,11 @@ prepare-dirs:
 	mkdir -p ${CURRENT_DIR}/data/artifacts || true && \
 	mkdir -p ${CURRENT_DIR}/data/minio || true
 
-build-mlflow: prepare-dirs build-network
-	docker build -f Dockerfile -t adzhumurat/${PROJECT_NAME}:local .
+build-mlflow:
+	docker build -f Dockerfile -t adzhumurat/${PROJECT_NAME}:dev .
 
 build-minio:
-	docker build -f Dockerfile.minio -t minio:dev .
+	docker build -f minio/Dockerfile -t minio:dev .
 
 run-mlflow:
 	docker run -d --rm \
@@ -25,7 +25,7 @@ run-mlflow:
 		-p "${MLFLOW_PORT}:${MLFLOW_PORT}" \
 	    -v "${CURRENT_DIR}/data:${MLFLOW_HOME}" \
 	    --name ${PROJECT_NAME}_container_ui \
-		adzhumurat/${PROJECT_NAME}:local \
+		adzhumurat/${PROJECT_NAME}:dev \
 		serve
 
 run-minio:
@@ -51,8 +51,8 @@ build-jupyter: prepare-dirs
 stop-jupyter:
 	docker rm -f ${PROJECT_NAME}_jupyter_container
 
-push-ui: build-ui-prod
-	docker push adzhumurat/${PROJECT_NAME}_ui:local
+push-mlflow:
+	docker push adzhumurat/${PROJECT_NAME}:dev
 
 run-jupyter: stop-jupyter build-jupyter
 	docker run -d --rm \
@@ -68,9 +68,9 @@ build:  build-mlflow build-jupyter build-minio
 
 stop: stop-mlflow stop-jupyter stop-minio
 
-run-all: run-mlflow run-minio run-jupyter
+run-all: prepare-dirs build-network run-mlflow run-minio run-jupyter
 
-run: stop run-all
+run: stop prepare-dirs build-network run-mlflow run-minio
 
 clean:
 	docker image rm -f adzhumurat/${PROJECT_NAME}_api:latest && \

@@ -20,3 +20,12 @@ MinIO interface
 ```shell
 http://localhost:9001/
 ```
+
+Jupyter interface
+```shell
+make run-jupyter
+```
+
+```shell
+http://localhost:8888/
+```

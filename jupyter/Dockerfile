@@ -1,4 +1,4 @@
-FROM adzhumurat/mlflow:local
+FROM adzhumurat/mlflow_local:dev
 
 WORKDIR /srv/
 
