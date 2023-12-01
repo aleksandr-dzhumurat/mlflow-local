@@ -5,6 +5,7 @@ set -o nounset      # exit when your script tries to use undeclared variables.
 
 case "$1" in
   serve)
+	python3.11 src/prepare_bucket.py && \
     mlflow server \
 		  --backend-store-uri sqlite:///"$MLFLOW_HOME"/mlflow.db \
 		  --default-artifact-root s3://${AWS_BUCKET_NAME}/ \

@@ -24,6 +24,7 @@ run-mlflow:
 		--network ${NETWORK_NAME} \
 		-p "${MLFLOW_PORT}:${MLFLOW_PORT}" \
 	    -v "${CURRENT_DIR}/data:${MLFLOW_HOME}" \
+	    -v "${CURRENT_DIR}/src:/srv/src" \
 	    --name ${PROJECT_NAME}_container_ui \
 		adzhumurat/${PROJECT_NAME}:dev \
 		serve
